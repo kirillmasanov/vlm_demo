@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VLM Demo — Yandex Cloud AI Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ root_path }}/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body data-root-path="{{ root_path }}">
+    <header>
+        <h1>VLM Demo</h1>
+        <span class="subtitle">Yandex Cloud AI Studio</span>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab active" data-tab="gemma">Gemma 3 27B</button>
+        <button class="tab" data-tab="yandexart">YandexART</button>
+    </nav>
+
+    <main>
+        <!-- Gemma 3 27B -->
+        <section id="tab-gemma" class="tab-content active">
+            <h2 class="section-title">Анализ изображений</h2>
+            <p class="description">Выберите одно или несколько изображений и задайте вопрос — модель проанализирует их и ответит текстом.<br>
+                <span class="doc-links">
+                    <span class="doc-label">Полезные ссылки:</span>
+                    <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/operations/generation/multimodels-request.html" target="_blank" rel="noopener">Completions API. Отправить запрос мультимодальной модели</a>
+                    <span class="doc-sep">&middot;</span>
+                    <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/pricing.html#common-instance-sync" target="_blank" rel="noopener">Правила тарификации</a>
+                </span>
+            </p>
+
+            <div class="panel">
+                <div class="panel-label">Изображение</div>
+                <div class="image-gallery">
+                    <div class="image-card" data-src="{{ root_path }}/static/images/01.jpg">
+                        <img src="{{ root_path }}/static/images/01.jpg" alt="Пример 1">
+                        <button class="zoom-btn" title="Увеличить">&#x1F50D;</button>
+                    </div>
+                    <div class="image-card" data-src="{{ root_path }}/static/images/02.jpg">
+                        <img src="{{ root_path }}/static/images/02.jpg" alt="Пример 2">
+                        <button class="zoom-btn" title="Увеличить">&#x1F50D;</button>
+                    </div>
+                    <div class="image-card" data-src="{{ root_path }}/static/images/03.jpg">
+                        <img src="{{ root_path }}/static/images/03.jpg" alt="Пример 3">
+                        <button class="zoom-btn" title="Увеличить">&#x1F50D;</button>
+                    </div>
+                    <div class="image-card" data-src="{{ root_path }}/static/images/04.jpg">
+                        <img src="{{ root_path }}/static/images/04.jpg" alt="Пример 4">
+                        <button class="zoom-btn" title="Увеличить">&#x1F50D;</button>
+                    </div>
+                    <div class="image-card" data-src="{{ root_path }}/static/images/05.jpg">
+                        <img src="{{ root_path }}/static/images/05.jpg" alt="Пример 5">
+                        <button class="zoom-btn" title="Увеличить">&#x1F50D;</button>
+                    </div>
+                    <label class="image-card upload-trigger" id="upload-area">
+                        <input type="file" id="file-input" accept="image/*" hidden>
+                        <span class="upload-trigger-icon">+</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="panel prompt-section">
+                <div class="panel-label">Запрос</div>
+                <textarea id="prompt-input" rows="2" placeholder="Введите запрос к модели..."></textarea>
+                <button id="send-btn" class="send-btn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                    Отправить
+                </button>
+            </div>
+
+            <div id="loader" class="loader" hidden>
+                <div class="spinner"></div>
+                <span>Обработка запроса…</span>
+            </div>
+
+            <div id="error-section" class="error-section" hidden>
+                <p id="error-text"></p>
+            </div>
+
+            <div id="result-section" class="result-section" hidden>
+                <div class="result-tabs">
+                    <button class="result-tab active" data-result="formatted">Форматированный</button>
+                    <button class="result-tab" data-result="raw-json">Raw JSON</button>
+                </div>
+                <div id="result-formatted" class="result-panel active">
+                    <div id="result-text" class="result-text"></div>
+                </div>
+                <div id="result-raw-json" class="result-panel">
+                    <pre class="result-raw-text" id="result-raw-json-text"></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- YandexART -->
+        <section id="tab-yandexart" class="tab-content">
+            <h2 class="section-title">Генерация изображений</h2>
+            <p class="description">Опишите изображение текстом — модель YandexART сгенерирует его.<br>
+                <span class="doc-links">
+                    <span class="doc-label">Полезные ссылки:</span>
+                    <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/operations/generation/yandexart-request.html" target="_blank" rel="noopener">Сгенерировать изображение с помощью YandexART</a>
+                    <span class="doc-sep">&middot;</span>
+                    <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/image-generation/api-ref/" target="_blank" rel="noopener">Image Generative API</a>
+                    <span class="doc-sep">&middot;</span>
+                    <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/pricing.html#common-instance-sync" target="_blank" rel="noopener">Правила тарификации</a>
+                </span>
+            </p>
+
+            <div class="panel prompt-section">
+                <div class="panel-label">Запрос</div>
+                <textarea id="art-prompt" rows="2" placeholder="Опишите желаемое изображение..."></textarea>
+            </div>
+
+            <div class="panel">
+                <div class="panel-label">Параметры</div>
+                <div class="param-row">
+                    <div class="param-group">
+                        <label class="param-label">Соотношение сторон</label>
+                        <div class="aspect-ratio-options">
+                            <button class="aspect-btn active" data-w="1" data-h="1">1:1</button>
+                            <button class="aspect-btn" data-w="16" data-h="9">16:9</button>
+                            <button class="aspect-btn" data-w="9" data-h="16">9:16</button>
+                            <button class="aspect-btn" data-w="3" data-h="2">3:2</button>
+                            <button class="aspect-btn" data-w="2" data-h="3">2:3</button>
+                        </div>
+                    </div>
+                    <div class="param-group">
+                        <label class="param-label" for="art-seed">Seed</label>
+                        <input type="text" id="art-seed" class="param-input" placeholder="Случайный" inputmode="numeric">
+                        <span class="param-hint">Число для воспроизводимости результата</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="art-send-btn" class="send-btn" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                Сгенерировать
+            </button>
+
+            <div id="art-loader" class="loader" hidden>
+                <div class="spinner"></div>
+                <span>Генерация изображения…</span>
+            </div>
+
+            <div id="art-error" class="error-section" hidden>
+                <p id="art-error-text"></p>
+            </div>
+
+            <div id="art-result" class="result-section" hidden>
+                <div class="result-tabs">
+                    <button class="result-tab active" data-art-result="image">Изображение</button>
+                    <button class="result-tab" data-art-result="raw-json">Raw JSON</button>
+                </div>
+                <div id="art-result-image" class="result-panel active">
+                    <div class="art-image-wrap">
+                        <img id="art-result-img" alt="Сгенерированное изображение">
+                    </div>
+                </div>
+                <div id="art-result-raw-json" class="result-panel">
+                    <pre class="result-raw-text" id="art-raw-json-text"></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox" hidden>
+        <div class="lightbox-overlay"></div>
+        <div class="lightbox-content">
+            <img id="lightbox-img" alt="Увеличенное изображение">
+            <button class="lightbox-close">&#x2715;</button>
+        </div>
+    </div>
+
+    <script src="{{ root_path }}/static/js/app.js"></script>
+</body>
+</html>
