@@ -294,14 +294,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             const data = await response.json();
-            artResultImg.src = `data:image/png;base64,${data.image_base64}`;
             const rawForDisplay = structuredClone(data.raw_json);
             if (rawForDisplay?.response?.image) {
                 rawForDisplay.response.image = rawForDisplay.response.image.slice(0, 64) + "…";
             }
             artRawJsonText.textContent = JSON.stringify(rawForDisplay, null, 2);
             artResult.hidden = false;
-            artResult.scrollIntoView({ behavior: "smooth", block: "start" });
+            artResultImg.onload = () => {
+                artResult.scrollIntoView({ behavior: "smooth", block: "start" });
+            };
+            artResultImg.src = `data:image/png;base64,${data.image_base64}`;
         } catch (err) {
             artErrorText.textContent = err.message;
             artError.hidden = false;
