@@ -15,6 +15,11 @@ app.include_router(api_router)
 templates = Jinja2Templates(directory=BASE_DIR / "templates")
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 @app.get("/")
 async def index(request: Request):
     return templates.TemplateResponse(
