@@ -42,9 +42,11 @@ def query_gemma(images: list[str], prompt: str) -> dict:
         max_tokens=None,
         stream=False,
     )
+    usage = response.usage
     return {
         "text": response.choices[0].message.content,
         "raw_json": response.model_dump(),
+        "total_tokens": usage.total_tokens if usage else None,
     }
 
 
@@ -87,6 +89,6 @@ def query_yandexart(prompt: str, width_ratio: int = 1, height_ratio: int = 1, se
                 if "error" in result:
                     raise RuntimeError(result["error"].get("message", "Ошибка генерации"))
                 image_base64 = result["response"]["image"]
-                return {"image_base64": image_base64, "raw_json": result}
+                return {"image_base64": image_base64, "raw_json": result, "request_json": body}
 
     raise TimeoutError("Генерация изображения заняла слишком много времени")

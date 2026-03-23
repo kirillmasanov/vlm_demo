@@ -83,9 +83,12 @@
             </div>
 
             <div id="result-section" class="result-section" hidden>
-                <div class="result-tabs">
-                    <button class="result-tab active" data-result="formatted">Форматированный</button>
-                    <button class="result-tab" data-result="raw-json">Raw JSON</button>
+                <div class="result-header">
+                    <div class="result-tabs">
+                        <button class="result-tab active" data-result="formatted">Ответ модели</button>
+                        <button class="result-tab" data-result="raw-json">Ответ API</button>
+                    </div>
+                    <span class="token-count" id="token-count" hidden></span>
                 </div>
                 <div id="result-formatted" class="result-panel active">
                     <div id="result-text" class="result-text"></div>
@@ -100,11 +103,12 @@
         <section id="tab-yandexart" class="tab-content">
             <h2 class="section-title">Генерация изображений</h2>
             <p class="description">Опишите изображение текстом — модель YandexART сгенерирует его.<br>
+                Один запрос на генерацию изображения с помощью YandexART — 2,24 ₽<br>
                 <span class="doc-links">
                     <span class="doc-label">Полезные ссылки:</span>
                     <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/operations/generation/yandexart-request.html" target="_blank" rel="noopener">Сгенерировать изображение с помощью YandexART</a>
                     <span class="doc-sep">&middot;</span>
-                    <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/image-generation/api-ref/" target="_blank" rel="noopener">Image Generative API</a>
+                    <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/image-generation/api-ref/" target="_blank" rel="noopener">Image Generation API</a>
                     <span class="doc-sep">&middot;</span>
                     <a href="https://aistudio.yandex.ru/docs/ru/ai-studio/pricing.html#common-instance-sync" target="_blank" rel="noopener">Правила тарификации</a>
                 </span>
@@ -126,12 +130,30 @@
                             <button class="aspect-btn" data-w="9" data-h="16">9:16</button>
                             <button class="aspect-btn" data-w="3" data-h="2">3:2</button>
                             <button class="aspect-btn" data-w="2" data-h="3">2:3</button>
+                            <button class="aspect-btn" id="aspect-custom-btn">Своё</button>
+                        </div>
+                        <div class="aspect-custom-inputs" id="aspect-custom-inputs" hidden>
+                            <input type="number" id="aspect-custom-w" class="param-input aspect-custom-field" min="1" value="1" placeholder="Ш">
+                            <span class="aspect-custom-sep">:</span>
+                            <input type="number" id="aspect-custom-h" class="param-input aspect-custom-field" min="1" value="1" placeholder="В">
                         </div>
                     </div>
-                    <div class="param-group">
-                        <label class="param-label" for="art-seed">Seed</label>
-                        <input type="text" id="art-seed" class="param-input" placeholder="Случайный" inputmode="numeric">
-                        <span class="param-hint">Число для воспроизводимости результата</span>
+                    <div class="param-group seed-group">
+                        <div class="seed-header">
+                            <label class="param-label">Зерно
+                                <span class="tooltip-icon" data-tooltip="Зерно (seed) — это число, на основе которого будет происходить генерация изображения. Вы можете сами указать число или задать случайное значение. При одинаковых промте и зерне результаты генераций будут одинаковыми.">?</span>
+                            </label>
+                            <label class="seed-random-label">
+                                <input type="checkbox" id="art-seed-random" checked>
+                                Случайное значение
+                            </label>
+                        </div>
+                        <input type="number" id="art-seed" class="param-input seed-input" min="1" max="9007199254740991" value="1" disabled>
+                        <input type="range" id="art-seed-range" class="seed-range" min="1" max="9007199254740991" value="1" disabled>
+                        <div class="seed-range-labels">
+                            <span>1</span>
+                            <span>9007199254740991</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -153,12 +175,16 @@
             <div id="art-result" class="result-section" hidden>
                 <div class="result-tabs">
                     <button class="result-tab active" data-art-result="image">Изображение</button>
-                    <button class="result-tab" data-art-result="raw-json">Raw JSON</button>
+                    <button class="result-tab" data-art-result="request-json">Тело запроса</button>
+                    <button class="result-tab" data-art-result="raw-json">Ответ API</button>
                 </div>
                 <div id="art-result-image" class="result-panel active">
                     <div class="art-image-wrap">
                         <img id="art-result-img" alt="Сгенерированное изображение">
                     </div>
+                </div>
+                <div id="art-result-request-json" class="result-panel">
+                    <pre class="result-raw-text" id="art-request-json-text"></pre>
                 </div>
                 <div id="art-result-raw-json" class="result-panel">
                     <pre class="result-raw-text" id="art-raw-json-text"></pre>

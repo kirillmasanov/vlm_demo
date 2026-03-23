@@ -203,6 +203,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
             resultText.innerHTML = marked.parse(data.result);
             resultRawJsonText.textContent = JSON.stringify(data.raw_json, null, 2);
+            const tokenCount = document.getElementById("token-count");
+            if (data.total_tokens != null) {
+                const cost = (data.total_tokens / 1000 * 0.4).toFixed(2);
+                tokenCount.textContent = `Токенов: ${data.total_tokens} (${cost} ₽)`;
+                tokenCount.hidden = false;
+            } else {
+                tokenCount.hidden = true;
+            }
             resultSection.hidden = false;
             resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
         } catch (err) {
@@ -224,7 +232,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const artResult = document.getElementById("art-result");
     const artResultImg = document.getElementById("art-result-img");
     const artRawJsonText = document.getElementById("art-raw-json-text");
+    const artRequestJsonText = document.getElementById("art-request-json-text");
     const aspectBtns = document.querySelectorAll(".aspect-btn");
+
+    const artSeedInput = document.getElementById("art-seed");
+    const artSeedRange = document.getElementById("art-seed-range");
+    const artSeedRandom = document.getElementById("art-seed-random");
 
     let artWidthRatio = 1;
     let artHeightRatio = 1;
@@ -233,6 +246,21 @@ document.addEventListener("DOMContentLoaded", () => {
         artSendBtn.disabled = !artPrompt.value.trim();
     }
 
+    // Seed controls
+    artSeedRandom.addEventListener("change", () => {
+        const disabled = artSeedRandom.checked;
+        artSeedInput.disabled = disabled;
+        artSeedRange.disabled = disabled;
+    });
+
+    artSeedInput.addEventListener("input", () => {
+        artSeedRange.value = artSeedInput.value;
+    });
+
+    artSeedRange.addEventListener("input", () => {
+        artSeedInput.value = artSeedRange.value;
+    });
+
     artPrompt.addEventListener("input", () => {
         updateArtSendBtn();
         artPrompt.style.height = "auto";
@@ -240,13 +268,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Aspect ratio selection
+    const aspectCustomBtn = document.getElementById("aspect-custom-btn");
+    const aspectCustomInputs = document.getElementById("aspect-custom-inputs");
+    const aspectCustomW = document.getElementById("aspect-custom-w");
+    const aspectCustomH = document.getElementById("aspect-custom-h");
+
     aspectBtns.forEach((btn) => {
         btn.addEventListener("click", () => {
             aspectBtns.forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
-            artWidthRatio = parseInt(btn.dataset.w);
-            artHeightRatio = parseInt(btn.dataset.h);
+            if (btn === aspectCustomBtn) {
+                aspectCustomInputs.hidden = false;
+                artWidthRatio = parseInt(aspectCustomW.value) || 1;
+                artHeightRatio = parseInt(aspectCustomH.value) || 1;
+            } else {
+                aspectCustomInputs.hidden = true;
+                artWidthRatio = parseInt(btn.dataset.w);
+                artHeightRatio = parseInt(btn.dataset.h);
+            }
         });
+    });
+
+    aspectCustomW.addEventListener("input", () => {
+        artWidthRatio = parseInt(aspectCustomW.value) || 1;
+    });
+
+    aspectCustomH.addEventListener("input", () => {
+        artHeightRatio = parseInt(aspectCustomH.value) || 1;
     });
 
     // Result tabs for YandexART
@@ -284,7 +332,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     prompt: artPrompt.value.trim(),
                     width_ratio: artWidthRatio,
                     height_ratio: artHeightRatio,
-                    seed: document.getElementById("art-seed").value.trim() || null,
+                    seed: artSeedRandom.checked ? null : artSeedInput.value,
                 }),
             });
 
@@ -299,6 +347,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 rawForDisplay.response.image = rawForDisplay.response.image.slice(0, 64) + "…";
             }
             artRawJsonText.textContent = JSON.stringify(rawForDisplay, null, 2);
+            artRequestJsonText.textContent = JSON.stringify(data.request_json, null, 2);
             artResult.hidden = false;
             artResultImg.onload = () => {
                 artResult.scrollIntoView({ behavior: "smooth", block: "start" });
