@@ -9,19 +9,20 @@
 - Загрузка собственных изображений
 - Текстовый запрос к мультимодальной модели
 - Форматированный ответ с поддержкой Markdown
-- Просмотр сырого JSON-ответа API
+- Просмотр тела запроса и ответа API
+- Отображение количества токенов и стоимости запроса
 
 ### YandexART — генерация изображений
 - Генерация изображений по текстовому описанию
-- Настройка соотношения сторон (1:1, 16:9, 9:16, 3:2, 2:3)
+- Настройка соотношения сторон (1:1, 16:9, 9:16, 3:2, 2:3 или произвольное)
 - Опциональный параметр seed для воспроизводимости
-- Просмотр сырого JSON-ответа API
+- Просмотр тела запроса и ответа API
 
 ## Технологии
 
 - **Backend:** FastAPI, Python 3.12
 - **Frontend:** HTML, CSS, JavaScript
-- **API:** Yandex Cloud AI Studio (OpenAI-совместимый API для Gemma, REST API для YandexART)
+- **API:** Yandex Cloud AI Studio (Responses API для Gemma, REST API для YandexART)
 - **Зависимости:** uv
 
 ## Быстрый старт
@@ -38,7 +39,7 @@
 1. Клонируйте репозиторий:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/kirillmasanov/vlm_demo.git
 cd vlm_demo
 ```
 
@@ -66,7 +67,7 @@ docker compose up --build
 
 ## Полезные ссылки
 
-- [Completions API. Отправить запрос мультимодальной модели](https://aistudio.yandex.ru/docs/ru/ai-studio/operations/generation/multimodels-request.html)
+- [Responses API](https://aistudio.yandex.ru/docs/ru/ai-studio/responses/createResponse.html)
 - [Сгенерировать изображение с помощью YandexART](https://aistudio.yandex.ru/docs/ru/ai-studio/operations/generation/yandexart-request.html)
-- [Image Generative API](https://aistudio.yandex.ru/docs/ru/ai-studio/image-generation/api-ref/)
+- [Image Generation API](https://aistudio.yandex.ru/docs/ru/ai-studio/image-generation/api-ref/)
 - [Правила тарификации](https://aistudio.yandex.ru/docs/ru/ai-studio/pricing.html#common-instance-sync)
