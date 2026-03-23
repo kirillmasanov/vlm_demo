@@ -32,6 +32,19 @@ def query_gemma(images: list[str], prompt: str) -> dict:
             }
         )
 
+    response = client.responses.create(
+        model=f"gpt://{YANDEX_FOLDER_ID}/gemma-3-27b-it",
+        input=[{
+            "role": "user",
+            "type": "message",
+            "content": input_content,
+        }],
+    )
+    data = response.model_dump()
+
+    usage = data.get("usage", {})
+    text = data["output"][0]["content"][0]["text"]
+    # Скрываем base64 в запросе для отображения
     body = {
         "model": f"gpt://{YANDEX_FOLDER_ID}/gemma-3-27b-it",
         "input": [{
@@ -40,22 +53,6 @@ def query_gemma(images: list[str], prompt: str) -> dict:
             "content": input_content,
         }],
     }
-
-    with httpx.Client(timeout=120) as http:
-        resp = http.post(
-            "https://ai.api.cloud.yandex.net/v1/responses",
-            headers={
-                "Authorization": f"Api-Key {YANDEX_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            json=body,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-
-    usage = data.get("usage", {})
-    text = data["output"][0]["content"][0]["text"]
-    # Скрываем base64 в запросе для отображения
     request_for_display = {**body}
     display_input = []
     for msg in body["input"]:
