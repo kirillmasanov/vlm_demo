@@ -16,6 +16,7 @@ class GemmaRequest(BaseModel):
 class GemmaResponse(BaseModel):
     result: str
     raw_json: Any
+    request_json: Any
     total_tokens: int | None = None
 
 
@@ -23,7 +24,7 @@ class GemmaResponse(BaseModel):
 async def gemma_endpoint(req: GemmaRequest):
     try:
         data = query_gemma(req.images, req.prompt)
-        return GemmaResponse(result=data["text"], raw_json=data["raw_json"], total_tokens=data["total_tokens"])
+        return GemmaResponse(result=data["text"], raw_json=data["raw_json"], request_json=data["request_json"], total_tokens=data["total_tokens"])
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

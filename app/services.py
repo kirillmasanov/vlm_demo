@@ -22,31 +22,59 @@ ART_HEADERS = {
 
 
 def query_gemma(images: list[str], prompt: str) -> dict:
-    content: list[dict] = [{"type": "text", "text": prompt}]
+    input_content: list[dict] = [{"type": "input_text", "text": prompt}]
     for img in images:
-        content.append(
+        input_content.append(
             {
-                "type": "image_url",
-                "image_url": {"url": f"data:image/jpeg;base64,{img}"},
+                "type": "input_image",
+                "detail": "auto",
+                "image_url": f"data:image/jpeg;base64,{img}",
             }
         )
 
-    response = client.chat.completions.create(
-        model=f"gpt://{YANDEX_FOLDER_ID}/gemma-3-27b-it",
-        messages=[
-            {
-                "role": "user",
-                "content": content,
-            }
-        ],
-        max_tokens=None,
-        stream=False,
-    )
-    usage = response.usage
+    body = {
+        "model": f"gpt://{YANDEX_FOLDER_ID}/gemma-3-27b-it",
+        "input": [{
+            "role": "user",
+            "type": "message",
+            "content": input_content,
+        }],
+    }
+
+    with httpx.Client(timeout=120) as http:
+        resp = http.post(
+            "https://ai.api.cloud.yandex.net/v1/responses",
+            headers={
+                "Authorization": f"Api-Key {YANDEX_API_KEY}",
+                "Content-Type": "application/json",
+            },
+            json=body,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+
+    usage = data.get("usage", {})
+    text = data["output"][0]["content"][0]["text"]
+    # Скрываем base64 в запросе для отображения
+    request_for_display = {**body}
+    display_input = []
+    for msg in body["input"]:
+        display_msg = {**msg}
+        display_content = []
+        for item in msg.get("content", []):
+            if item.get("type") == "input_image" and item.get("image_url", "").startswith("data:"):
+                display_content.append({**item, "image_url": item["image_url"][:64] + "…"})
+            else:
+                display_content.append(item)
+        display_msg["content"] = display_content
+        display_input.append(display_msg)
+    request_for_display["input"] = display_input
+
     return {
-        "text": response.choices[0].message.content,
-        "raw_json": response.model_dump(),
-        "total_tokens": usage.total_tokens if usage else None,
+        "text": text,
+        "raw_json": data,
+        "request_json": request_for_display,
+        "total_tokens": usage.get("total_tokens"),
     }
 
 

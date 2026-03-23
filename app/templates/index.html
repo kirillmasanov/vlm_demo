@@ -86,12 +86,16 @@
                 <div class="result-header">
                     <div class="result-tabs">
                         <button class="result-tab active" data-result="formatted">Ответ модели</button>
+                        <button class="result-tab" data-result="request-json">Тело запроса</button>
                         <button class="result-tab" data-result="raw-json">Ответ API</button>
                     </div>
                     <span class="token-count" id="token-count" hidden></span>
                 </div>
                 <div id="result-formatted" class="result-panel active">
                     <div id="result-text" class="result-text"></div>
+                </div>
+                <div id="result-request-json" class="result-panel">
+                    <pre class="result-raw-text" id="result-request-json-text"></pre>
                 </div>
                 <div id="result-raw-json" class="result-panel">
                     <pre class="result-raw-text" id="result-raw-json-text"></pre>

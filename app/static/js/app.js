@@ -202,6 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const data = await response.json();
             resultText.innerHTML = marked.parse(data.result);
+            document.getElementById("result-request-json-text").textContent = JSON.stringify(data.request_json, null, 2);
             resultRawJsonText.textContent = JSON.stringify(data.raw_json, null, 2);
             const tokenCount = document.getElementById("token-count");
             if (data.total_tokens != null) {
