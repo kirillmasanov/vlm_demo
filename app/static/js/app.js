@@ -48,6 +48,19 @@ document.addEventListener("DOMContentLoaded", () => {
         autoResize();
     });
 
+    // Gemma parameters
+    const gemmaTemp = document.getElementById("gemma-temperature");
+    const gemmaTempRange = document.getElementById("gemma-temperature-range");
+    const gemmaMaxTokens = document.getElementById("gemma-max-tokens");
+
+    gemmaTemp.addEventListener("input", () => {
+        gemmaTempRange.value = gemmaTemp.value;
+    });
+
+    gemmaTempRange.addEventListener("input", () => {
+        gemmaTemp.value = gemmaTempRange.value;
+    });
+
     // Select preset image (toggle)
     presetCards.forEach((card) => {
         card.addEventListener("click", (e) => {
@@ -192,6 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 body: JSON.stringify({
                     images: Array.from(selectedImages.values()),
                     prompt: promptInput.value.trim(),
+                    temperature: parseFloat(gemmaTemp.value),
+                    max_output_tokens: gemmaMaxTokens.value ? parseInt(gemmaMaxTokens.value) : null,
                 }),
             });
 

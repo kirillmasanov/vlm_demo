@@ -64,14 +64,37 @@
                 </div>
             </div>
 
+            <div class="panel">
+                <div class="panel-label">Параметры</div>
+                <div class="param-row">
+                    <div class="param-group">
+                        <label class="param-label">Температура
+                            <span class="tooltip-icon" data-tooltip="Температура влияет на вариативность сгенерированного текста: чем выше значение, тем более непредсказуемым будет результат выполнения запроса. Укажите любое значение от 0 до 1, чтобы задать «креативность» модели.">?</span>
+                        </label>
+                        <input type="number" id="gemma-temperature" class="param-input" min="0" max="1" step="0.1" value="0.7">
+                        <input type="range" id="gemma-temperature-range" class="seed-range" min="0" max="1" step="0.1" value="0.7">
+                        <div class="seed-range-labels">
+                            <span>0</span>
+                            <span>1</span>
+                        </div>
+                    </div>
+                    <div class="param-group">
+                        <label class="param-label" for="gemma-max-tokens">Максимум токенов в ответе</label>
+                        <input type="number" id="gemma-max-tokens" class="param-input" min="1" max="8192" placeholder="Без ограничений">
+                        <span class="param-hint">Оставьте пустым для ответа без ограничений</span>
+                    </div>
+                </div>
+            </div>
+
             <div class="panel prompt-section">
                 <div class="panel-label">Запрос</div>
                 <textarea id="prompt-input" rows="2" placeholder="Введите запрос к модели..."></textarea>
-                <button id="send-btn" class="send-btn" disabled>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
-                    Отправить
-                </button>
             </div>
+
+            <button id="send-btn" class="send-btn" disabled>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+                Отправить
+            </button>
 
             <div id="loader" class="loader" hidden>
                 <div class="spinner"></div>

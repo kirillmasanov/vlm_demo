@@ -21,7 +21,7 @@ ART_HEADERS = {
 }
 
 
-def query_gemma(images: list[str], prompt: str) -> dict:
+def query_gemma(images: list[str], prompt: str, temperature: float = 0.7, max_output_tokens: int | None = None) -> dict:
     input_content: list[dict] = [{"type": "input_text", "text": prompt}]
     for img in images:
         input_content.append(
@@ -32,27 +32,25 @@ def query_gemma(images: list[str], prompt: str) -> dict:
             }
         )
 
-    response = client.responses.create(
-        model=f"gpt://{YANDEX_FOLDER_ID}/gemma-3-27b-it",
-        input=[{
-            "role": "user",
-            "type": "message",
-            "content": input_content,
-        }],
-    )
-    data = response.model_dump()
-
-    usage = data.get("usage", {})
-    text = data["output"][0]["content"][0]["text"]
-    # Скрываем base64 в запросе для отображения
-    body = {
+    kwargs: dict = {
         "model": f"gpt://{YANDEX_FOLDER_ID}/gemma-3-27b-it",
         "input": [{
             "role": "user",
             "type": "message",
             "content": input_content,
         }],
+        "temperature": temperature,
     }
+    if max_output_tokens is not None:
+        kwargs["max_output_tokens"] = max_output_tokens
+
+    response = client.responses.create(**kwargs)
+    data = response.model_dump()
+
+    usage = data.get("usage", {})
+    text = data["output"][0]["content"][0]["text"]
+    # Скрываем base64 в запросе для отображения
+    body = dict(kwargs)
     request_for_display = {**body}
     display_input = []
     for msg in body["input"]:
