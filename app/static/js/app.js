@@ -48,6 +48,16 @@ document.addEventListener("DOMContentLoaded", () => {
         autoResize();
     });
 
+    // Prompt presets
+    document.querySelectorAll(".prompt-preset-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            promptInput.value = btn.dataset.prompt;
+            updateSendBtn();
+            autoResize();
+            promptInput.focus();
+        });
+    });
+
     // Gemma parameters
     const gemmaTemp = document.getElementById("gemma-temperature");
     const gemmaTempRange = document.getElementById("gemma-temperature-range");
