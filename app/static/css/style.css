@@ -385,9 +385,40 @@ main {
 }
 
 /* Prompt */
+.textarea-wrap {
+    position: relative;
+}
+
+.textarea-clear {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: var(--border);
+    color: var(--text-hint);
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+}
+
+.textarea-clear[hidden] {
+    display: none;
+}
+
+.textarea-clear:hover {
+    background: var(--danger);
+    color: #fff;
+}
+
 .prompt-section textarea {
     width: 100%;
-    padding: 12px 14px;
+    padding: 12px 40px 12px 14px;
     border: 1.5px solid var(--border);
     border-radius: var(--radius-m);
     font-size: 14px;
@@ -483,13 +514,19 @@ main {
     justify-content: space-between;
 }
 
-.token-count {
+.result-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.result-meta-item {
     font-size: 12px;
     color: var(--text-hint);
     white-space: nowrap;
 }
 
-.token-count[hidden] {
+.result-meta-item[hidden] {
     display: none;
 }
 
@@ -840,8 +877,13 @@ main {
 }
 
 /* YandexART result image */
-.art-image-wrap {
+#art-result-image {
     text-align: center;
+}
+
+.art-image-wrap {
+    position: relative;
+    display: inline-block;
 }
 
 .art-image-wrap img {
@@ -850,6 +892,33 @@ main {
     border-radius: var(--radius-m);
     border: 1px solid var(--border);
     cursor: pointer;
+    display: block;
+}
+
+.art-download-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-s);
+    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+}
+
+.art-image-wrap:hover .art-download-btn {
+    opacity: 1;
+}
+
+.art-download-btn:hover {
+    background: rgba(0, 0, 0, 0.7);
 }
 
 /* Lightbox */

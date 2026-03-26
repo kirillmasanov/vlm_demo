@@ -43,17 +43,33 @@ document.addEventListener("DOMContentLoaded", () => {
         promptInput.style.height = promptInput.scrollHeight + "px";
     }
 
+    const promptClear = document.getElementById("prompt-clear");
+
+    function updatePromptClear() {
+        promptClear.hidden = !promptInput.value;
+    }
+
     promptInput.addEventListener("input", () => {
         updateSendBtn();
         autoResize();
+        updatePromptClear();
+    });
+
+    promptClear.addEventListener("click", () => {
+        promptInput.value = "";
+        updateSendBtn();
+        autoResize();
+        updatePromptClear();
+        promptInput.focus();
     });
 
     // Prompt presets
-    document.querySelectorAll(".prompt-preset-btn").forEach((btn) => {
+    document.querySelectorAll(".prompt-preset-btn:not(.art-style-btn)").forEach((btn) => {
         btn.addEventListener("click", () => {
             promptInput.value = btn.dataset.prompt;
             updateSendBtn();
             autoResize();
+            updatePromptClear();
             promptInput.focus();
         });
     });
@@ -207,6 +223,7 @@ document.addEventListener("DOMContentLoaded", () => {
         errorSection.hidden = true;
         loader.hidden = false;
         sendBtn.disabled = true;
+        const gemmaStart = Date.now();
 
         try {
             const response = await fetch(`${ROOT}/api/gemma`, {
@@ -229,6 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
             resultText.innerHTML = marked.parse(data.result);
             document.getElementById("result-request-json-text").textContent = JSON.stringify(data.request_json, null, 2);
             resultRawJsonText.textContent = JSON.stringify(data.raw_json, null, 2);
+            const gemmaDuration = ((Date.now() - gemmaStart) / 1000).toFixed(1);
+            const durationEl = document.getElementById("gemma-duration");
+            durationEl.textContent = `${gemmaDuration} сек`;
+            durationEl.hidden = false;
+
             const tokenCount = document.getElementById("token-count");
             if (data.total_tokens != null) {
                 const cost = (data.total_tokens / 1000 * 0.4).toFixed(2);
@@ -287,10 +309,26 @@ document.addEventListener("DOMContentLoaded", () => {
         artSeedInput.value = artSeedRange.value;
     });
 
+    const artPromptClear = document.getElementById("art-prompt-clear");
+
+    function updateArtPromptClear() {
+        artPromptClear.hidden = !artPrompt.value;
+    }
+
     artPrompt.addEventListener("input", () => {
         updateArtSendBtn();
+        updateArtPromptClear();
         artPrompt.style.height = "auto";
         artPrompt.style.height = artPrompt.scrollHeight + "px";
+    });
+
+    artPromptClear.addEventListener("click", () => {
+        artPrompt.value = "";
+        updateArtSendBtn();
+        updateArtPromptClear();
+        artPrompt.style.height = "auto";
+        artPrompt.style.height = artPrompt.scrollHeight + "px";
+        artPrompt.focus();
     });
 
     // Aspect ratio selection
@@ -349,6 +387,7 @@ document.addEventListener("DOMContentLoaded", () => {
         artError.hidden = true;
         artLoader.hidden = false;
         artSendBtn.disabled = true;
+        const artStart = Date.now();
 
         try {
             const response = await fetch(`${ROOT}/api/yandexart`, {
@@ -374,6 +413,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             artRawJsonText.textContent = JSON.stringify(rawForDisplay, null, 2);
             artRequestJsonText.textContent = JSON.stringify(data.request_json, null, 2);
+            const artDuration = ((Date.now() - artStart) / 1000).toFixed(1);
+            const artDurationEl = document.getElementById("art-duration");
+            artDurationEl.textContent = `${artDuration} сек`;
+            artDurationEl.hidden = false;
+
             artResult.hidden = false;
             artResultImg.onload = () => {
                 artResult.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -387,5 +431,31 @@ document.addEventListener("DOMContentLoaded", () => {
             artLoader.hidden = true;
             updateArtSendBtn();
         }
+    });
+
+    // Download YandexART image
+    document.getElementById("art-download-btn").addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.href = artResultImg.src;
+        link.download = "yandexart.png";
+        link.click();
+    });
+
+    // YandexART style presets
+    document.querySelectorAll(".art-style-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+            const style = btn.dataset.style;
+            const current = artPrompt.value.trim();
+            if (current) {
+                artPrompt.value = current + style;
+            } else {
+                artPrompt.value = style.slice(2);
+            }
+            updateArtSendBtn();
+            updateArtPromptClear();
+            artPrompt.style.height = "auto";
+            artPrompt.style.height = artPrompt.scrollHeight + "px";
+            artPrompt.focus();
+        });
     });
 });

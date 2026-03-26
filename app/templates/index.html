@@ -92,8 +92,14 @@
                     <button class="prompt-preset-btn" data-prompt="Сравни изображения, опиши что у них общего и чем они различаются.">Сравни</button>
                     <button class="prompt-preset-btn" data-prompt="Проанализируй изображение и подробно опиши всё, что на нём изображено.">Проанализируй</button>
                     <button class="prompt-preset-btn" data-prompt="Оцифруй текст с изображения, сохраняя форматирование.">Оцифруй</button>
+                    <button class="prompt-preset-btn" data-prompt="Переведи весь текст с изображения на русский язык.">Переведи</button>
+                    <button class="prompt-preset-btn" data-prompt="Найди ошибки, неточности или проблемы на изображении.">Найди ошибки</button>
+                    <button class="prompt-preset-btn" data-prompt="Извлеки все данные с изображения и представь их в виде таблицы в формате Markdown.">Извлеки данные</button>
                 </div>
-                <textarea id="prompt-input" rows="2" placeholder="Введите запрос к модели..."></textarea>
+                <div class="textarea-wrap">
+                    <textarea id="prompt-input" rows="2" placeholder="Введите запрос к модели..."></textarea>
+                    <button class="textarea-clear" id="prompt-clear" hidden title="Очистить">&#x2715;</button>
+                </div>
             </div>
 
             <button id="send-btn" class="send-btn" disabled>
@@ -117,7 +123,10 @@
                         <button class="result-tab" data-result="request-json">Тело запроса</button>
                         <button class="result-tab" data-result="raw-json">Ответ API</button>
                     </div>
-                    <span class="token-count" id="token-count" hidden></span>
+                    <div class="result-meta">
+                        <span class="result-meta-item" id="gemma-duration" hidden></span>
+                        <span class="result-meta-item" id="token-count" hidden></span>
+                    </div>
                 </div>
                 <div id="result-formatted" class="result-panel active">
                     <div id="result-text" class="result-text"></div>
@@ -148,7 +157,18 @@
 
             <div class="panel prompt-section">
                 <div class="panel-label">Запрос</div>
-                <textarea id="art-prompt" rows="2" placeholder="Опишите желаемое изображение..."></textarea>
+                <div class="prompt-presets">
+                    <button class="prompt-preset-btn art-style-btn" data-style=", фотореализм">Фотореализм</button>
+                    <button class="prompt-preset-btn art-style-btn" data-style=", акварель">Акварель</button>
+                    <button class="prompt-preset-btn art-style-btn" data-style=", аниме">Аниме</button>
+                    <button class="prompt-preset-btn art-style-btn" data-style=", пиксельарт">Пиксельарт</button>
+                    <button class="prompt-preset-btn art-style-btn" data-style=", масляная живопись">Масло</button>
+                    <button class="prompt-preset-btn art-style-btn" data-style=", 3D рендер">3D</button>
+                </div>
+                <div class="textarea-wrap">
+                    <textarea id="art-prompt" rows="2" placeholder="Опишите желаемое изображение..."></textarea>
+                    <button class="textarea-clear" id="art-prompt-clear" hidden title="Очистить">&#x2715;</button>
+                </div>
             </div>
 
             <div class="panel">
@@ -205,14 +225,20 @@
             </div>
 
             <div id="art-result" class="result-section" hidden>
-                <div class="result-tabs">
-                    <button class="result-tab active" data-art-result="image">Изображение</button>
-                    <button class="result-tab" data-art-result="request-json">Тело запроса</button>
-                    <button class="result-tab" data-art-result="raw-json">Ответ API</button>
+                <div class="result-header">
+                    <div class="result-tabs">
+                        <button class="result-tab active" data-art-result="image">Изображение</button>
+                        <button class="result-tab" data-art-result="request-json">Тело запроса</button>
+                        <button class="result-tab" data-art-result="raw-json">Ответ API</button>
+                    </div>
+                    <span class="result-meta-item" id="art-duration" hidden></span>
                 </div>
                 <div id="art-result-image" class="result-panel active">
                     <div class="art-image-wrap">
                         <img id="art-result-img" alt="Сгенерированное изображение">
+                        <button id="art-download-btn" class="art-download-btn" title="Скачать">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>
+                        </button>
                     </div>
                 </div>
                 <div id="art-result-request-json" class="result-panel">
